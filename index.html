@@ -76,28 +76,36 @@
       <!--     (de nhan "Moi nhat" luon nam o tren cung).                -->
       <!-- ============================================================= -->
 
-       <script>
-        // BẠN CHỈ CẦN THAY 2 THÔNG TIN NÀY THEO TÀI KHOẢN CỦA BẠN:
-        const user = "anhquyet"; 
-        const repo = "apa-report.github.io";
+      <a class="entry latest" href="2026-06-03.html">
+       <a class="entry" href="2026-06-03.html">
+       <!-- <span class="no">01</span> -->
+        <span class="body">
+          <!-- <span class="date">03 tháng 6, 2026</span> -->
+	  <span class="date">3 June, 2026</span>
+          <!-- <div class="title">Tuần 03/06 — Cập nhật tiến độ</div> -->
+	  <div class="title">Week 3 (27 May - 3 June)</div>
+        </span>
+        <span class="go">&rarr;</span>
+      </a>
 
-        // Đoạn code tự động quét file từ GitHub
-        fetch(`https://github.com{user}/${repo}/contents/`)
-        .then(response => response.json())
-        .then(data => {
-            const list = document.getElementById('danh-sach-bao-cao');
-            list.innerHTML = ''; // Xóa chữ đang quét file
+      <!-- Vi du mot tuan cu (mau de ban xem cau truc - xoa neu chua dung):-->
+      <a class="entry" href="2026-06-02.html">
+       <!-- <span class="no">02</span> -->
+        <span class="body">
+	  <span class="date">27 May, 2026</span>
+          <div class="title">Week 2 (20 May - 27 May)</div>
+        </span>
+        <span class="go">&rarr;</span>
+      </a>
 
-            data.forEach(file => {
-                // Chỉ hiển thị file có đuôi .html và không phải file index.html
-                if(file.name.endsWith('.html') && file.name !== 'index.html') {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<a href="${file.name}">Report ${file.name}</a>`;
-                    list.appendChild(li);
-                }
-            });
-        }).catch(err => console.error("Lỗi quét file: ", err));
-    </script>
+      <a class="entry" href="2026-06-01.html">
+       <!-- <span class="no">03</span> -->
+        <span class="body">
+	  <span class="date">20 May, 2026</span>
+          <div class="title">Week 1 (13 May - 20 May)</div>
+        </span>
+        <span class="go">&rarr;</span>
+      </a>
       
 
     </nav>
