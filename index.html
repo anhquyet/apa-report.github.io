@@ -199,7 +199,7 @@
       if (!m) return base;
       var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
       try {
-        return d.toLocaleDateString("vi-VN", { day: "2-digit", month: "long", year: "numeric" });
+        return d.toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
       } catch (e) {
         return base;
       }
