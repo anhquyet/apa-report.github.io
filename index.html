@@ -43,11 +43,12 @@
   .entry .go{align-self:center; color:var(--mut); font-size:22px; transition:transform .18s, color .18s}
   .entry:hover .go{transform:translateX(5px); color:var(--accent)}
   .entry.latest .title::after{
-    content:"Lastest"; font-family:-apple-system,sans-serif; font-size:10px;
+    content:"Latest"; font-family:-apple-system,sans-serif; font-size:10px;
     font-weight:700; letter-spacing:.06em; text-transform:uppercase;
     background:var(--accent); color:#fff; padding:2px 8px; border-radius:20px;
     margin-left:10px; vertical-align:middle;
   }
+  .status{padding:22px 12px; color:var(--mut); font-size:14px}
   footer{margin-top:46px; color:var(--mut); font-size:12.5px; line-height:1.7}
   footer code{background:var(--card); border:1px solid var(--line);
     border-radius:5px; padding:1px 6px; font-size:12px}
@@ -55,65 +56,164 @@
 </head>
 <body>
   <div class="wrap">
-
+ 
     <div class="kicker">APA · Project Status</div>
-    <!--<h1>Báo cáo tiến độ <em>hàng tuần</em></h1>-->
     <h1 style="font-size: 40px;">Weekly report</h1>
-    <!--<p class="lede">Lưu trữ các bản báo cáo theo tuần. Mỗi tuần là một trang riêng — bấm để mở.</p> -->
-
+ 
     <div class="rule"></div>
-    <!--<div class="count">Tổng hợp các bản báo cáo đã phát hành</div> -->
-
-    <!--<nav class="list">-->
-	<nav>
-	  
-      <!-- ============================================================= -->
-      <!--  CACH THEM TUAN MOI:                                          -->
-      <!--  1. Copy nguyen 1 khoi <a class="entry"> ... </a> ben duoi.   -->
-      <!--  2. Dan len TREN CUNG cua danh sach (tuan moi nhat o tren).   -->
-      <!--  3. Sua: href = ten file (vd 2026-06-10.html),                -->
-      <!--          .date = ngay hien thi, .title = tieu de tuan.        -->
-      <!--  4. Xoa chu "latest" o class cua khoi tuan CU, them vao tuan MOI -->
-      <!--     (de nhan "Moi nhat" luon nam o tren cung).                -->
-      <!-- ============================================================= -->
-
-      <ul id="report-list">
-        <!-- <li><a href="2026-06-03.html">Week 3</a></li>
-        <li><a href="2026-06-02.html">Week 2</a></li>
-        <li><a href="2026-06-01.html">Week 1</a></li>  -->
-
-	<script>
-        const user = "anhquyet"; 
-        const repo = "apa-report.github.io";
-		
-        fetch(`https://github.com{user}/${repo}/contents/`)
-        .then(response => response.json())
-        .then(data => {
-            const list = document.getElementById('report-list');
-            list.innerHTML = '';
-            
-            data.forEach(file => {
-                
-                if(file.name.endsWith('.html') && file.name !== 'index.html') {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<a href="${file.name}">Read: ${file.name}</a>`;
-                    list.appendChild(li);
-                }
-            });
-        }).catch(err => console.error("Lỗi quét file: ", err));
-    </script>
-
-    </ul>
-      
+ 
+    <!-- ============================================================= -->
+    <!--  KHONG CAN SUA GI O DAY.                                      -->
+    <!--  Danh sach bao cao se duoc tu dong quet va do vao day.        -->
+    <!--  Sau nay chi can upload them file .html len cung thu muc tren -->
+    <!--  GitHub, trang nay se tu dong cap nhat.                       -->
+    <!-- ============================================================= -->
+    <nav class="list" id="report-list">
+      <div class="status" id="report-status">Đang quét danh sách báo cáo…</div>
     </nav>
 
-    <!--<footer>
-      Cách dùng: bỏ file báo cáo của tuần (vd <code>2026-06-10.html</code>) vào cùng thư mục với trang này,
-      thêm 1 dòng ở danh sách trên, rồi kéo–thả <strong>cả thư mục</strong> lên Netlify.<br>
-      Trang chủ này luôn có tên <code>index.html</code> và nằm ở thư mục gốc.
-    </footer> -->
-
-
+	  <!--
+    <footer>
+      Cách dùng: chỉ cần upload file báo cáo của tuần (vd <code>2026-06-10.html</code>)
+      vào cùng thư mục với trang này trên GitHub. Trang chủ luôn tên
+      <code>index.html</code> và nằm ở thư mục gốc của repo.
+    </footer>
+	   -->
+ 
   </div>
+ 
+  <script>
+  (function () {
+    // ====== CẤU HÌNH ======
+    // Đã điền sẵn theo tài khoản & repo của bạn — copy lên GitHub là chạy.
+    // (Nếu sau này đổi tài khoản/repo thì sửa 2 dòng dưới đây.)
+    let OWNER = "anhquyet";
+    let REPO  = "apa-report.github.io";
+ 
+    var host  = location.hostname;                          // vd: octocat.github.io
+    var parts = location.pathname.split("/").filter(Boolean);
+ 
+    // <owner>.github.io  ->  OWNER = "owner"
+    if (!OWNER && host.endsWith(".github.io")) {
+      OWNER = host.replace(".github.io", "");
+    }
+    // GitHub Pages của DỰ ÁN:  https://owner.github.io/<repo>/...
+    // GitHub Pages của USER:   https://owner.github.io/   (repo tên <owner>.github.io)
+    if (!REPO) {
+      if (parts.length && !parts[0].toLowerCase().endsWith(".html")) {
+        REPO = parts[0];
+      } else {
+        REPO = host;
+      }
+    }
+ 
+    var listEl   = document.getElementById("report-list");
+    var statusEl = document.getElementById("report-status");
+ 
+    function showStatus(msg) {
+      if (statusEl) statusEl.textContent = msg;
+    }
+ 
+    if (!OWNER || !REPO) {
+      showStatus("Chưa xác định được tài khoản/repo GitHub. " +
+                 "Hãy mở trang qua đường dẫn GitHub Pages, hoặc điền OWNER và REPO trong file index.html.");
+      return;
+    }
+ 
+    // API liệt kê file ở thư mục gốc của repo (nhánh mặc định).
+    // Nếu GitHub Pages của bạn chạy từ một nhánh khác (vd gh-pages),
+    // thêm "?ref=gh-pages" vào cuối URL bên dưới.
+    var api = "https://api.github.com/repos/" + OWNER + "/" + REPO + "/contents/";
+ 
+    fetch(api)
+      .then(function (res) {
+        if (!res.ok) throw new Error("GitHub API trả về mã " + res.status);
+        return res.json();
+      })
+      .then(function (files) {
+        if (!Array.isArray(files)) throw new Error("Dữ liệu trả về không hợp lệ.");
+ 
+        // Lọc các file .html, bỏ index.html; sắp xếp mới nhất lên đầu (theo tên file giảm dần).
+        var reports = files.filter(function (f) {
+          return f.type === "file" &&
+                 /\.html$/i.test(f.name) &&
+                 f.name.toLowerCase() !== "index.html";
+        }).sort(function (a, b) {
+          return b.name.localeCompare(a.name);
+        });
+ 
+        if (statusEl) statusEl.remove();
+ 
+        if (reports.length === 0) {
+          var empty = document.createElement("div");
+          empty.className = "status";
+          empty.textContent = "Chưa có báo cáo nào. Hãy upload file .html đầu tiên.";
+          listEl.appendChild(empty);
+          return;
+        }
+ 
+        var total = reports.length;
+        reports.forEach(function (file, i) {
+          var a = document.createElement("a");
+          a.className = "entry" + (i === 0 ? " latest" : "");
+          a.href = file.name;
+ 
+          var no = document.createElement("span");
+          no.className = "no";
+          no.textContent = ("0" + (total - i)).slice(-2);
+ 
+          var body = document.createElement("div");
+          body.className = "body";
+ 
+          var dateEl = document.createElement("div");
+          dateEl.className = "date";
+          dateEl.textContent = prettyDate(file.name);
+ 
+          var titleEl = document.createElement("div");
+          titleEl.className = "title";
+          titleEl.textContent = titleFromName(file.name);
+ 
+          body.appendChild(dateEl);
+          body.appendChild(titleEl);
+ 
+          var go = document.createElement("span");
+          go.className = "go";
+          go.textContent = "→";
+ 
+          a.appendChild(no);
+          a.appendChild(body);
+          a.appendChild(go);
+          listEl.appendChild(a);
+        });
+      })
+      .catch(function (err) {
+        showStatus("Không quét được danh sách báo cáo: " + err.message +
+                   ". Kiểm tra repo có ở chế độ công khai (public) không.");
+        console.error(err);
+      });
+ 
+    // "2026-06-02.html" -> "02 tháng 6, 2026" (nếu tên không phải dạng ngày thì giữ nguyên)
+    function prettyDate(name) {
+      var base = name.replace(/\.html$/i, "");
+      var m = base.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!m) return base;
+      var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+      try {
+        return d.toLocaleDateString("vi-VN", { day: "2-digit", month: "long", year: "numeric" });
+      } catch (e) {
+        return base;
+      }
+    }
+ 
+    // Tiêu đề hiển thị cho mỗi báo cáo.
+    function titleFromName(name) {
+      var base = name.replace(/\.html$/i, "");
+      if (/^\d{4}-\d{2}-\d{2}$/.test(base)) {
+        return "Weekly report — " + base;
+      }
+      return base;
+    }
+  })();
+  </script>
 </body>
 </html>
