@@ -77,10 +77,32 @@
       <!--     (de nhan "Moi nhat" luon nam o tren cung).                -->
       <!-- ============================================================= -->
 
-      <ul>
-        <li><a href="2026-06-03.html">Week 3</a></li>
+      <ul id="report-list">
+        <!-- <li><a href="2026-06-03.html">Week 3</a></li>
         <li><a href="2026-06-02.html">Week 2</a></li>
-        <li><a href="2026-06-01.html">Week 1</a></li>
+        <li><a href="2026-06-01.html">Week 1</a></li>  -->
+
+	<script>
+        const user = "anhquyet"; 
+        const repo = "apa-report.github.io";
+		
+        fetch(`https://github.com{user}/${repo}/contents/`)
+        .then(response => response.json())
+        .then(data => {
+            const list = document.getElementById('report-list');
+            list.innerHTML = '';
+            
+            data.forEach(file => {
+                
+                if(file.name.endsWith('.html') && file.name !== 'index.html') {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="${file.name}">Read: ${file.name}</a>`;
+                    list.appendChild(li);
+                }
+            });
+        }).catch(err => console.error("Lỗi quét file: ", err));
+    </script>
+
     </ul>
       
     </nav>
