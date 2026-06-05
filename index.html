@@ -71,14 +71,12 @@
     <nav class="list" id="report-list">
       <div class="status" id="report-status">Đang quét danh sách báo cáo…</div>
     </nav>
-
-	  <!--
+ 
     <footer>
       Cách dùng: chỉ cần upload file báo cáo của tuần (vd <code>2026-06-10.html</code>)
       vào cùng thư mục với trang này trên GitHub. Trang chủ luôn tên
       <code>index.html</code> và nằm ở thư mục gốc của repo.
     </footer>
-	   -->
  
   </div>
  
@@ -165,15 +163,10 @@
           var body = document.createElement("div");
           body.className = "body";
  
-          var dateEl = document.createElement("div");
-          dateEl.className = "date";
-          dateEl.textContent = prettyDate(file.name);
- 
           var titleEl = document.createElement("div");
           titleEl.className = "title";
           titleEl.textContent = titleFromName(file.name);
  
-          body.appendChild(dateEl);
           body.appendChild(titleEl);
  
           var go = document.createElement("span");
@@ -192,7 +185,7 @@
         console.error(err);
       });
  
-    // "2026-06-02.html" -> "02 tháng 6, 2026" (nếu tên không phải dạng ngày thì giữ nguyên)
+    // "2026-06-02.html" -> "02 June 2026" (nếu tên không phải dạng ngày thì giữ nguyên)
     function prettyDate(name) {
       var base = name.replace(/\.html$/i, "");
       var m = base.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -205,11 +198,11 @@
       }
     }
  
-    // Tiêu đề hiển thị cho mỗi báo cáo.
+    // Tiêu đề hiển thị cho mỗi báo cáo, vd: "Weekly report — 06 June 2026".
     function titleFromName(name) {
       var base = name.replace(/\.html$/i, "");
       if (/^\d{4}-\d{2}-\d{2}$/.test(base)) {
-        return "Weekly report — " + base;
+        return "Weekly report — " + prettyDate(name);
       }
       return base;
     }
